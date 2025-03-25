@@ -50,7 +50,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-white shadow-lg flex flex-col p-5 h-screen">
+    <div className="w-64 bg-white shadow-lg flex flex-col p-5 max-h-max">
       {/* Logo Section */}
       <div className="flex items-center gap-3 -mt-14">
         <img src={logo} alt="Aurify Logo" className="h-40" />

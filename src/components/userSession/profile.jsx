@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../axios/axios";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
+import OrderManagement from "./orderHistory";
 const ProfilePage = () => {
   // Extract userId from URL
   const { userId } = useParams();
@@ -130,7 +130,7 @@ const ProfilePage = () => {
 
       // Calculate pure gold value
       const pureGoldValue = (selectedPurity.value / 10000) * weightNum;
-      const roundedValue =  parseFloat(pureGoldValue.toFixed(3));
+      const roundedValue = parseFloat(pureGoldValue.toFixed(3));
 
       setCalculatedGoldValue(roundedValue);
       setGoldInput(roundedValue.toString());
@@ -234,7 +234,7 @@ const ProfilePage = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-red-50">
-        <div className="text-red-600 text-xl">
+        <div className="text-red-600 ">
           Error: {error}
           <button
             onClick={() => window.location.reload()}
@@ -511,7 +511,17 @@ const ProfilePage = () => {
               </div>
             </div>
           </section>
+
+          <div className="my-12 border-t border-dashed border-gray-300"></div>
+
+          <h2 className="text-xl font-bold -mt-7 mb-5 ml-5">Order History</h2>
+          <div>
+          <OrderManagement userId={userId} />
+          </div>
+         
         </div>
+
+        {/* Divider */}
       </div>
     </div>
   );

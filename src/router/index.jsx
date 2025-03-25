@@ -12,7 +12,7 @@ import Customers from '../pages/Customers';
 import Orders from '../pages/Orders';
 import Shop from '../pages/Shop';
 import Bank from '../pages/Bank';
-
+import ProfilePage from '../components/userSession/profile'
 
 const Router = () => {
     return (
@@ -26,6 +26,7 @@ const Router = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/profile/:userId" element={<ProfilePage />} />
         </Routes>
     );
 };

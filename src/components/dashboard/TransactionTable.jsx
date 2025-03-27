@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import { ChevronDownIcon, ChevronUpIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useMemo, forwardRef } from "react";
+import { ChevronDownIcon, ChevronUpIcon, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image, pdf } from '@react-pdf/renderer';
 
 // Improved Chevron Icon Component
 export const ChevronIcon = ({ expanded }) => {
@@ -24,10 +25,44 @@ export const ChevronIcon = ({ expanded }) => {
     );
 };
 
+// Download Single Transaction 
+const downloadSingleTransactionPDF = async (transaction) => {
+    try {
+        // Create the PDF document with just this transaction
+        const doc = (
+            <Document>
+                <Page size="A4" wrap={false}>
+                    <TransactionPDF transaction={transaction} products={products} />
+                </Page>
+            </Document>
+        );
+
+        // Generate the blob
+        const blob = await pdf(doc).toBlob();
+
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Transaction_${transaction.id}_Details.pdf`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 100);
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+    }
+};
+
 // Transaction Header Component with Sorting
 const TransactionHeader = ({
     sortConfig,
-    onSort
+    onSort,
+    className = ''
 }) => {
     const headers = [
         { key: 'id', label: 'Transaction ID' },
@@ -39,7 +74,7 @@ const TransactionHeader = ({
     ];
 
     return (
-        <header className="grid grid-cols-7 items-center px-12 py-4 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-md font-semibold text-white">
+        <header className={`grid grid-cols-7 items-center px-12 py-4 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-md font-semibold text-white ${className}`}>
             {headers.map((header) => (
                 <div
                     key={header.key}
@@ -56,6 +91,312 @@ const TransactionHeader = ({
             ))}
             <div>Customers</div>
         </header>
+    );
+};
+
+// Products
+const products = [
+    {
+        image: "https://cdn.builder.io/api/v1/image/assets/TEMP/02a48f308affaf6760b150aa96c2d18a3b2b8204",
+        name: "5 Grams Gold Bar",
+        weight: "5",
+        purity: "9999",
+        quantity: "20",
+        amount: "1727.8817",
+    },
+    {
+        image: "https://cdn.builder.io/api/v1/image/assets/TEMP/02a48f308affaf6760b150aa96c2d18a3b2b8204",
+        name: "10 Grams Gold Bar",
+        weight: "10",
+        purity: "9999",
+        quantity: "15",
+        amount: "3455.7634",
+    },
+    {
+        image: "https://cdn.builder.io/api/v1/image/assets/TEMP/02a48f308affaf6760b150aa96c2d18a3b2b8204",
+        name: "1 Grams Gold Bar",
+        weight: "1",
+        purity: "9999",
+        quantity: "50",
+        amount: "345.5763",
+    },
+];
+
+// PDF Generation Component
+const TransactionPDF = ({ transaction, products }) => {
+    const styles = StyleSheet.create({
+        page: {
+            padding: 0,
+            margin: 0,
+            position: 'relative',
+        },
+        container: {
+            padding: 40,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        },
+        watermarkContainer: {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) rotate(-45deg)",
+            opacity: 0.04,
+            zIndex: -1,
+        },
+        watermarkText: {
+            fontSize: 100,
+            color: "#000000",
+            textAlign: "center",
+            fontWeight: "bold",
+        },
+        header: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 40,
+            borderBottom: 2,
+            borderBottomColor: "#e2e8f0",
+            paddingBottom: 20,
+        },
+        headerContent: {
+            flex: 1,
+        },
+        companyName: {
+            fontSize: 24,
+            fontWeight: "bold",
+            color: "#1e3a8a",
+            marginBottom: 10,
+        },
+        companyDetails: {
+            fontSize: 9,
+            color: "#64748b",
+            lineHeight: 1.6,
+        },
+        invoiceDetails: {
+            alignItems: "flex-end",
+        },
+        invoiceTitle: {
+            fontSize: 28,
+            fontWeight: "bold",
+            color: "#1e3a8a",
+            marginBottom: 10,
+        },
+        invoiceNumber: {
+            fontSize: 12,
+            color: "#64748b",
+        },
+        invoiceDate: {
+            fontSize: 10,
+            color: "#64748b",
+            marginTop: 5,
+        },
+        billingSection: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 30,
+        },
+        billingBox: {
+            width: "48%",
+            padding: 15,
+            backgroundColor: "#f8fafc",
+            borderRadius: 5,
+        },
+        billingTitle: {
+            fontSize: 12,
+            fontWeight: "bold",
+            color: "#1e3a8a",
+            marginBottom: 10,
+        },
+        billingInfo: {
+            fontSize: 9,
+            color: "#64748b",
+            lineHeight: 1.6,
+        },
+        table: {
+            marginBottom: 30,
+        },
+        productImage: {
+            width: 40,
+            height: 40,
+            objectFit: "contain",
+        },
+        tableHeader: {
+            flexDirection: "row",
+            backgroundColor: "#1e3a8a",
+            padding: 10,
+            color: "#ffffff",
+        },
+        tableCellHeader: {
+            color: "#ffffff",
+            fontSize: 10,
+            fontWeight: "bold",
+        },
+        tableRow: {
+            flexDirection: "row",
+            borderBottomWidth: 1,
+            borderBottomColor: "#e2e8f0",
+            padding: 10,
+        },
+        tableCell: {
+            fontSize: 9,
+            color: "#334155",
+        },
+        productName: {
+            fontSize: 10,
+            fontWeight: "bold",
+            marginBottom: 4,
+        },
+        productDetails: {
+            fontSize: 8,
+            color: "#64748b",
+        },
+        termsSection: {
+            marginBottom: 30,
+            padding: 15,
+            backgroundColor: "#f8fafc",
+            borderRadius: 5,
+        },
+        termsTitle: {
+            fontSize: 11,
+            fontWeight: "bold",
+            color: "#1e3a8a",
+            marginBottom: 10,
+        },
+        termsText: {
+            fontSize: 8,
+            color: "#64748b",
+            lineHeight: 1.6,
+        },
+        footer: {
+            borderTopWidth: 1,
+            borderTopColor: "#e2e8f0",
+            paddingTop: 20,
+            alignItems: "center",
+        },
+        footerText: {
+            fontSize: 12,
+            color: "#1e3a8a",
+            fontWeight: "bold",
+            marginBottom: 5,
+        },
+        footerContact: {
+            fontSize: 9,
+            color: "#64748b",
+        },
+    });
+
+    const watermarkText = transaction.status.toUpperCase();
+
+    return (
+        <Document>
+            {/* <Page size="A4" style={styles.page} key={transaction.id}> */}
+            <View style={styles.container}>
+                <View style={styles.watermarkContainer}>
+                    <Text style={styles.watermarkText}>{watermarkText}</Text>
+                </View>
+
+                <View style={styles.header}>
+                    <View style={styles.headerContent}>
+                        <Text style={styles.companyName}>Gold Trading Company</Text>
+                        <Text style={styles.companyDetails}>
+                            123 Gold Street, Business District{"\n"}
+                            Tel: +971 4 123 4567{"\n"}
+                            Email: info@goldtrading.com{"\n"}
+                            TRN: 123456789012345
+                        </Text>
+                    </View>
+                    <View style={styles.invoiceDetails}>
+                        <Text style={styles.invoiceTitle}>Delivery Note</Text>
+                        <Text style={styles.invoiceNumber}>#{transaction.id}</Text>
+                        <Text style={styles.invoiceDate}>
+                            Date: {new Date(transaction.date).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "numeric",
+                                year: "numeric",
+                            })}
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.billingSection}>
+                    <View style={styles.billingBox}>
+                        <Text style={styles.billingTitle}>Bill To:</Text>
+                        <Text style={styles.billingInfo}>
+                            {transaction.customer?.name || "N/A"}
+                            {"\n"}
+                            Dubai, UAE
+                            {"\n"}
+                            Phone: +971 5XX XXX XXXX
+                            {"\n"}
+                            {transaction.customer?.email || "N/A"}
+                        </Text>
+                    </View>
+                    <View style={styles.billingBox}>
+                        <Text style={styles.billingTitle}>Payment Details:</Text>
+                        <Text style={styles.billingInfo}>
+                            Method: {transaction.paymentMethod}
+                            {"\n"}
+                            Delivery Date: {transaction.date}
+                            {"\n"}
+                            Transaction ID: {transaction.id}
+                            {"\n"}
+                            Status: {transaction.status}
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.table}>
+                    <View style={styles.tableHeader}>
+                        <Text style={[styles.tableCellHeader, { flex: 1 }]}>Image</Text>
+                        <Text style={[styles.tableCellHeader, { flex: 2.5 }]}>Item Description</Text>
+                        <Text style={[styles.tableCellHeader, { flex: 0.5 }]}>Qty</Text>
+                        <Text style={[styles.tableCellHeader, { flex: 1 }]}>Purity</Text>
+                        <Text style={[styles.tableCellHeader, { flex: 1 }]}>Amount</Text>
+                    </View>
+
+                    {products.map((product, index) => (
+                        <View
+                            style={[
+                                styles.tableRow,
+                                { backgroundColor: index % 2 === 0 ? "#f8fafc" : "#ffffff" },
+                            ]}
+                            key={index}
+                        >
+                            <View style={[styles.tableCell, { flex: 1 }]}>
+                                <Image src={product.image} style={styles.productImage} />
+                            </View>
+                            <View style={[styles.tableCell, { flex: 2.5 }]}>
+                                <Text style={styles.productName}>{product.name}</Text>
+                                <Text style={styles.productDetails}>
+                                    Weight: {product.weight}g
+                                </Text>
+                            </View>
+                            <Text style={[styles.tableCell, { flex: 0.5 }]}>{product.quantity}</Text>
+                            <Text style={[styles.tableCell, { flex: 1 }]}>{product.purity}</Text>
+                            <Text style={[styles.tableCell, { flex: 1 }]}>${product.amount}</Text>
+                        </View>
+                    ))}
+                </View>
+
+                <View style={styles.termsSection}>
+                    <Text style={styles.termsTitle}>Terms & Conditions:</Text>
+                    <Text style={styles.termsText}>
+                        • All prices are in USD{"\n"}
+                        • Payment is due upon receipt of delivery{"\n"}
+                        • Goods once sold cannot be returned{"\n"}
+                        • This is a computer-generated delivery note and requires no signature
+                    </Text>
+                </View>
+
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Thank you for your business!</Text>
+                    <Text style={styles.footerContact}>
+                        For any queries, please contact: support@goldtrading.com
+                    </Text>
+                </View>
+            </View>
+            {/* </Page> */}
+        </Document>
     );
 };
 
@@ -82,12 +423,12 @@ const getStatusBadge = (status) => {
 };
 
 // Transaction Row Component
-const TransactionRow = ({ transaction, expanded, onToggleExpand }) => {
+const TransactionRow = ({ transaction, expanded, onToggleExpand, dashboard = false }) => {
     const { id, date, paymentMethod, status, pricingOption, amount, customer } = transaction;
 
     return (
-        <div className="last:border-b-0">
-            <div className="grid grid-cols-7 items-center px-12 py-4 hover:bg-gray-50 transition-colors">
+        <div className="last:border-b-0 bg-white">
+            <div className="grid grid-cols-7 items-center px-12 py-4 hover:bg-[#F1FCFF] transition-colors">
                 <div className="flex items-center">
                     <button
                         onClick={onToggleExpand}
@@ -102,21 +443,59 @@ const TransactionRow = ({ transaction, expanded, onToggleExpand }) => {
                 <div>{getStatusBadge(status)}</div>
                 <div>{pricingOption}</div>
                 <div className="font-semibold">${amount.toLocaleString()}</div>
-                <div>
-                    <button className="px-6 py-2 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+                <div className="flex items-center justify-between">
+                    <button
+                        className="px-6 py-2 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                    >
                         View
                     </button>
+                    {!dashboard && (
+                        <button
+                            onClick={() => downloadSingleTransactionPDF(transaction)}
+                            className="p-2 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white rounded-md transition-colors"
+                            aria-label="Download PDF"
+                        >
+                            <Download size={16} />
+                        </button>
+                    )}
+
                 </div>
             </div>
             {expanded && (
-                <div className="bg-gray-50 p-4 grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <p className="text-gray-600">Customer Name</p>
-                        <p>{customer?.name || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <p className="text-gray-600">Contact Email</p>
-                        <p>{customer?.email || 'N/A'}</p>
+                <div className="bg-[#F1FCFF] py-5 px-8 w-full">
+                    <div className="bg-white rounded-xl border-2 border-sky-400 border-solid shadow-[0_4px_4px_rgba(50,180,219,0.24)] w-full overflow-x-auto">
+                        <div className="hidden md:flex px-0 py-4 text-sm text-black bg-zinc-300 rounded-[9px_9px_0_0]">
+                            <div className="pl-7 text-left w-[150px]">Product Image</div>
+                            <div className="text-center w-[250px]">Name</div>
+                            <div className="text-center w-[180px]">Weight</div>
+                            <div className="text-center w-[180px]">Purity</div>
+                            <div className="text-center w-[180px]">Quantity</div>
+                            <div className="text-center w-[180px]">Amount</div>
+                            <div className="text-center w-[200px]">Actions</div>
+                        </div>
+
+                        {products.map((product, index) => (
+                            <div
+                                key={index}
+                                className="flex flex-col md:flex-row items-center px-4 py-5 border-b border-solid border-b-zinc-100"
+                            >
+                                <div className="hidden md:flex items-center w-full">
+                                    <div className="pl-7 text-sm text-center text-black w-[150px]">
+                                        <div className="flex justify-center items-center ml-12 bg-white h-[68px] shadow-[0_1px_2px_rgba(0,0,0,0.09)] w-[53px]">
+                                            {product.image ? (
+                                                <img src={product.image} alt="Gold bar" className="w-10 h-[62px]" />
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                    <div className="text-sm text-center text-black w-[250px]">{product.name}</div>
+                                    <div className="text-sm text-center text-black w-[180px]">{product.weight}</div>
+                                    <div className="text-sm text-center text-black w-[180px]">{product.purity}</div>
+                                    <div className="text-sm text-center text-black w-[180px]">{product.quantity}</div>
+                                    <div className="text-sm text-center text-black w-[180px]">{product.amount}</div>
+                                    <div className="text-sm text-center text-black w-[200px]"></div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
@@ -164,7 +543,6 @@ const PaginationControls = ({
                         <ChevronLeft className="w-4 h-4" />
                     </button>
 
-
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
@@ -182,7 +560,10 @@ const PaginationControls = ({
 // Main Component
 const TransactionTable = ({
     timeFilter = "This Week",
-    statusFilter = null
+    statusFilter = null,
+    searchQuery = "",
+    className = '',
+    dashboard = false
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -316,7 +697,7 @@ const TransactionTable = ({
         },
     ];
 
-    // Filter transactions based on time and status
+    // Filter transactions based on time, status, and search query
     const filteredTransactions = useMemo(() => {
         return MOCK_TRANSACTIONS.filter(transaction => {
             // Time filter logic
@@ -329,9 +710,19 @@ const TransactionTable = ({
                 transaction.status.toLowerCase() === statusFilter.toLowerCase() ||
                 (statusFilter === "All Orders");
 
-            return isTimeMatch && isStatusMatch;
+            // Search query logic
+            const isSearchMatch = !searchQuery ||
+                transaction.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.pricingOption.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.amount.toString().includes(searchQuery) ||
+                transaction.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                transaction.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return isTimeMatch && isStatusMatch && isSearchMatch;
         });
-    }, [timeFilter, statusFilter]);
+    }, [timeFilter, statusFilter, searchQuery]);
 
     // Sorting logic
     const sortedTransactions = useMemo(() => {
@@ -366,7 +757,6 @@ const TransactionTable = ({
     // Handle rows per page change
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
-        // Reset to first page when rows per page changes
         setCurrentPage(1);
     };
 
@@ -377,11 +767,47 @@ const TransactionTable = ({
         }
     };
 
+    // Export all transactions to PDF
+    const handleExportAllToPDF = async () => {
+        try {
+            // Create an array of all transaction pages
+            const pages = filteredTransactions.map(transaction => (
+                <Page key={transaction.id} size="A4" wrap={false}>
+                    <TransactionPDF transaction={transaction} products={products} />
+                </Page>
+            ));
+
+            // Create the PDF document
+            const doc = <Document>{pages}</Document>;
+
+            // Generate the blob and trigger download
+            const blob = await pdf(doc).toBlob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'All_Transactions.pdf';
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
+    };
+
+    // Expose the function (keep this the same)
+    TransactionTable.exportAllToPDF = handleExportAllToPDF;
+
     return (
         <div className="w-full overflow-hidden">
             <TransactionHeader
                 sortConfig={sortConfig}
                 onSort={handleSort}
+                className={className}
             />
 
             {paginatedTransactions.length > 0 ? (
@@ -393,6 +819,7 @@ const TransactionTable = ({
                         onToggleExpand={() =>
                             setExpandedRowId(prev => prev === transaction.id ? null : transaction.id)
                         }
+                        dashboard={dashboard}
                     />
                 ))
             ) : (
@@ -411,5 +838,7 @@ const TransactionTable = ({
         </div>
     );
 };
+
+TransactionTable.displayName = 'TransactionTable';
 
 export default TransactionTable;

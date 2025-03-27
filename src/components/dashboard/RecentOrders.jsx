@@ -116,6 +116,7 @@ function RecentOrders() {
                 <TransactionTable
                     timeFilter={activeFilter}
                     statusFilter={selectedStatus}
+                    dashboard={true}
                 />
             </div>
         </section>

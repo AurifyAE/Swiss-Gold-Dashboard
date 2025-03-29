@@ -13,7 +13,7 @@ import Orders from '../pages/Orders';
 import Shop from '../pages/Shop';
 import Bank from '../pages/Bank';
 import ProfilePage from '../components/userSession/profile'
-
+import UserSpotrate from '../pages/UserSpotrate'
 const Router = () => {
     return (
         <Routes>
@@ -27,6 +27,7 @@ const Router = () => {
             <Route path="/shop" element={<Shop />} />
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/users-spotrate" element={<UserSpotrate />} />
         </Routes>
     );
 };

@@ -132,8 +132,8 @@ const CategoryManagement = ({
     handleCloseDeleteModal();
   };
 
-  const handleViewCategory = (categoryId) => {
-    navigate(`/users-spotrate/${categoryId}`);
+  const handleViewCategory = (category) => {
+    navigate(`/users-spotrate?categoryId=${category._id}&name=${category.name}`);
   };
 
   const columns = [
@@ -187,7 +187,7 @@ const CategoryManagement = ({
                     <Button
                       variant="outlined"
                       startIcon={<VisibilityIcon />}
-                      onClick={() => handleViewCategory(category._id)}
+                      onClick={() => handleViewCategory(category)}
                       size="small"
                     >
                       User SpotRate

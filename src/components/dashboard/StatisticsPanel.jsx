@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 // IconWrapper Component
 const IconWrapper = ({ bgColor, opacity = "0.05", children }) => {
@@ -28,11 +28,85 @@ const StatCard = ({ icon, label, value, valueColor }) => {
     );
 };
 
+// Filter dropdown component
+const FilterDropdown = ({ activeFilter, setActiveFilter }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const filters = ["This Week", "This Month", "This Year"];
+
+    return (
+        <div className="relative">
+            <button 
+                className="flex justify-between items-center px-4 rounded-xl cursor-pointer bg-zinc-100 h-[30px] w-[115px]"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span className="text-black font-inter text-xs mr-2">{activeFilter}</span>
+                <svg
+                    width="9"
+                    height="5"
+                    viewBox="0 0 9 5"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path d="M0 0L4.5 4.5L9 0" stroke="#4628A7" />
+                </svg>
+            </button>
+            
+            {isOpen && (
+                <div className="absolute right-0 mt-1 w-full bg-white rounded-md shadow-lg z-10">
+                    {filters.map((filter) => (
+                        <div
+                            key={filter}
+                            className={`px-4 py-2 text-xs cursor-pointer hover:bg-zinc-100 ${
+                                activeFilter === filter ? "bg-zinc-100" : ""
+                            }`}
+                            onClick={() => {
+                                setActiveFilter(filter);
+                                setIsOpen(false);
+                            }}
+                        >
+                            {filter}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Main StatisticsPanel Component
 const StatisticsPanel = () => {
+    const [activeFilter, setActiveFilter] = useState("This Week");
+    
+    // Sample data that would change based on filter
+    const getFilteredData = () => {
+        switch(activeFilter) {
+            case "This Month":
+                return {
+                    customers: "24",
+                    ordersCompleted: "5.2K",
+                    totalRevenue: "AED 580K"
+                };
+            case "This Year":
+                return {
+                    customers: "312",
+                    ordersCompleted: "65.8K",
+                    totalRevenue: "AED 7.2M"
+                };
+            case "This Week":
+            default:
+                return {
+                    customers: "06",
+                    ordersCompleted: "1.25K",
+                    totalRevenue: "AED 145K"
+                };
+        }
+    };
+    
+    const filteredData = getFilteredData();
+
     return (
         <section className="flex justify-center w-full px-12">
-            <div className="flex flex-row m-5 w-full h-[140px] bg-white rounded-2xl size-full p-5">
+            <div className="flex flex-row m-5 w-full h-[140px] bg-white rounded-2xl size-full px-10 py-5">
                 <div className="flex justify-between items-center p-10 w-full">
                     <StatCard
                         icon={
@@ -45,14 +119,14 @@ const StatisticsPanel = () => {
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
-                                        d="M15 4H5V20H19V8H15V4ZM3 2.9918C3 2.44405 3.44749 2 3.9985 2H16L20.9997 7L21 20.9925C21 21.5489 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918ZM12 11.5C10.6193 11.5 9.5 10.3807 9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9C14.5 10.3807 13.3807 11.5 12 11.5ZM7.52746 17C7.77619 14.75 9.68372 13 12 13C14.3163 13 16.2238 14.75 16.4725 17H7.52746Z"
+                                        d="M15 4H5V20H19V8H15V4ZM3 2.9918C3 2.44405 3.44749 2 3.9985 2H16L20.9997 7L21 20.9925C21 21.5489 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918ZM12 11.5C10.6193 11.5 9.5 10.3807 9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9C14.5 10.3807 13.3807 11.5 12 11.5ZM7.52746 17C7.77619 14.75 9.68372 13 12 13C4.3163 13 16.2238 14.75 16.4725 17H7.52746Z"
                                         fill="#E68107"
                                     />
                                 </svg>
                             </IconWrapper>
                         }
                         label="Customers"
-                        value="06"
+                        value={filteredData.customers}
                         valueColor="text-[#FF8C00]"
                     />
 
@@ -74,7 +148,7 @@ const StatisticsPanel = () => {
                             </IconWrapper>
                         }
                         label="Orders Completed"
-                        value="1.25K"
+                        value={filteredData.ordersCompleted}
                         valueColor="text-[#11AA0E]"
                     />
 
@@ -96,22 +170,14 @@ const StatisticsPanel = () => {
                             </IconWrapper>
                         }
                         label="Total Revenue Made"
-                        value="AED 145K"
+                        value={filteredData.totalRevenue}
                         valueColor="text-[#156AEF]"
                     />
                 </div>
-                <button className="flex justify-between items-center px-4 rounded-xl cursor-pointer bg-zinc-100 h-[30px] w-[115px] right-0 top-0">
-                    <span className="text-black font-inter text-xs mr-2">This Week</span>
-                    <svg
-                        width="9"
-                        height="5"
-                        viewBox="0 0 9 5"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path d="M0 0L4.5 4.5L9 0" stroke="#4628A7" />
-                    </svg>
-                </button>
+                <FilterDropdown 
+                    activeFilter={activeFilter} 
+                    setActiveFilter={setActiveFilter} 
+                />
             </div>
         </section>
     );

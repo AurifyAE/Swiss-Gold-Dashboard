@@ -23,7 +23,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import io from "socket.io-client";
-import axiosInstance from "../../axios/AxiosInstance";
+import axiosInstance from "../../axios/axios";
 import { useCurrency } from "../../context/CurrencyContext";
 import AddCommodityModal from "./AddCommodityModal";
 

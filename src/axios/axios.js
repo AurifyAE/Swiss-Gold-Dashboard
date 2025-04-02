@@ -1,17 +1,12 @@
 import axios from 'axios';
 
-
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL, 
   headers: {
     'Content-Type': 'application/json',
-    'X-Secret-Key': 'IfiuH/ko+rh/gekRvY4Va0s+=uucP3xwIfo0e8YTN1INF',
-    'Connection': 'keep-alive',
+    'X-Secret-Key': import.meta.env.VITE_API_KEY
   },
   withCredentials: true,
-  timeout: 15000,
 });
 
-
-
-export default axiosInstance;
+export default axiosInstance;

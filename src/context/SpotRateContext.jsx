@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
-import axiosInstance from "../axios/AxiosInstance";
+import axiosInstance from "../axios/axios";
 
 const SpotRateContext = createContext();
 

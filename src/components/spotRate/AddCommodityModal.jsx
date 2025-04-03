@@ -1,7 +1,7 @@
 import React, { useState ,useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, MenuItem, Grid, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import axiosInstance from '../../axios/axiosInstance';
+import axiosInstance from '../../axios/axios';
 import { Snackbar, Alert } from '@mui/material';
 
 

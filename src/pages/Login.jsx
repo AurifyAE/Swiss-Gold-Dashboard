@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginImage from "../assets/logo.jpg";
-import axiosInstance from "../axios/AxiosInstance";
+import axiosInstance from "../axios/axios";
 import { requestFCMToken } from "../utils/firebaseUtils";
 import { registerServiceWorker } from "../utils/serviceWorkerRegistration";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -209,8 +209,8 @@ const LoginPage = ({ onLoginSuccess })=> {
           >
             Welcome back
           </h2>
-          <p style={{ color: "#718096", marginBottom: "2rem" }}>
-            Enter your user name and password to sign in
+          <p className="text-[#718096] mb-5 w-full">
+            Enter your username and password to sign In
           </p>
 
           <form onSubmit={handleLogin}>
@@ -369,7 +369,7 @@ const LoginPage = ({ onLoginSuccess })=> {
             top: "0",
             height: "110%",
             width: "100%",
-            right: "-10rem",
+            right:"50px",
             left: "auto",
             transform: "skewX(-10deg)",
             overflow: "hidden",

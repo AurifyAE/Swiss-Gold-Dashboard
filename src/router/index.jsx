@@ -13,11 +13,13 @@ import Orders from '../pages/Orders';
 import Shop from '../pages/Shop';
 import Bank from '../pages/Bank';
 import ProfilePage from '../components/userSession/profile'
+import Protect from "../protectorRouter/adminProtect";
 // import UserSpotrate from '../pages/UserSpotrate'
 const Router = () => {
     return (
         <Routes>
             <Route path="/" element={<Login />} />
+            <Route element={<Protect />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/bank" element={<Bank />} />
             {/* <Route path="/spot-rate" element={<SpotRate />} /> */}
@@ -27,7 +29,8 @@ const Router = () => {
             <Route path="/shop" element={<Shop />} />
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
-            {/* <Route path="/users-spotrate" element={<UserSpotrate />} /> */}
+            </Route>
+
         </Routes>
     );
 };

@@ -720,7 +720,7 @@ export default function ProductManagement() {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9] p-6 rounded-lg shadow-sm min-h-screen">
+    <div className="bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9] p-6 rounded-lg shadow-sm min-h-screen px-16">
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => {
@@ -729,7 +729,7 @@ export default function ProductManagement() {
             resetForm();
             setIsModalOpen(true);
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors"
+          className="bg-gradient-to-r from-[#32B4DB] to-[#156AEF] hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors"
         >
           <Plus size={18} />
           <span>Add Product</span>
@@ -742,7 +742,7 @@ export default function ProductManagement() {
             placeholder="Search SKU or title"
             value={searchTerm}
             onChange={handleSearch}
-            className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
+            className="pl-10 pr-4 py-2 rounded-full border-2 border-[#32B4DB] focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
           />
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         </div>
@@ -752,7 +752,7 @@ export default function ProductManagement() {
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="bg-gradient-to-r from-blue-500 to-blue-400 text-white">
+              <tr className="bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white">
                 <th className="py-3 px-4 text-left">Image</th>
                 <th className="py-3 px-4 text-left">Title</th>
                 <th className="py-3 px-4 text-left">Description</th>

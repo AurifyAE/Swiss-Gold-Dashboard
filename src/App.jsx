@@ -5,7 +5,9 @@ import Layout from "./components/layout/index";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import { MarketDataProvider } from "./context/MarketDataContext";
 import { SpotRateProvider } from "./context/SpotRateContext";
+import { AppProvider } from "./context/AppContext";
 import RouterConfig from "./router";
+import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 
 const AppContent = () => {
@@ -17,6 +19,7 @@ const AppContent = () => {
       {!isRootPath && <Layout />}
       <div className="flex-1 ml-60">
         <RouterConfig />
+        <Toaster position="top-right" reverseOrder={false} />
       </div>
     </div>
   );
@@ -28,7 +31,9 @@ const App = () => {
       <CurrencyProvider>
         <MarketDataProvider>
           <SpotRateProvider>
-            <AppContent />
+            <AppProvider>
+              <AppContent />
+            </AppProvider>
           </SpotRateProvider>
         </MarketDataProvider>
       </CurrencyProvider>

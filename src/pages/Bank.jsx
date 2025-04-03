@@ -21,6 +21,8 @@ function Bank() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
+  const userName = localStorage.getItem("userName") || {};
+
   useEffect(() => {
     fetchBankDetails();
   }, []);
@@ -28,7 +30,7 @@ function Bank() {
   const fetchBankDetails = async () => {
     setIsLoading(true);
     try {
-      const response = await getUserData("test5");
+      const response = await getUserData(userName);
 
       if (response.data && response.data.success) {
         const bankDetailsData = response.data.data?.bankDetails || [];
@@ -46,9 +48,6 @@ function Bank() {
   const handleSave = async (formData) => {
     setIsLoading(true);
     try {
-      const userData = JSON.parse(localStorage.getItem("userData")) || {};
-      const userName = userData.userName || "test5";
-
       const dataWithUserName = { ...formData, userName };
 
       if (editingBank !== null) {
@@ -96,9 +95,6 @@ function Bank() {
     setIsLoading(true);
 
     try {
-      const userData = JSON.parse(localStorage.getItem("userData")) || {};
-      const userName = userData.userName || "test5";
-
       const response = await deleteBankDetails(userName, bankToDelete._id);
 
       if (response.data.success) {

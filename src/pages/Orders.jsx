@@ -25,7 +25,7 @@ function Orders() {
   };
 
   return (
-    <div className='bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9] h-full'>
+    <div className='bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9] h-[130%] mb-20'>
       <Header title={title} description={description} />
       <div className='flex flex-row justify-between'>
         <div className='flex flex-row gap-3 py-6 px-16'>

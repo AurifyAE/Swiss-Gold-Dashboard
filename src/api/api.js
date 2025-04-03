@@ -1,4 +1,4 @@
-import axiosInstance from '../axios/AxiosInstance';
+import axiosInstance from '../axios/axios';
 
 // Get User Data
 export const getUserData = (userName) => {

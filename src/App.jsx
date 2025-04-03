@@ -15,7 +15,7 @@ const AppContent = () => {
   return (
     <div className="flex">
       {!isRootPath && <Layout />}
-      <div className="flex-1">
+      <div className="flex-1 ml-60">
         <RouterConfig />
       </div>
     </div>

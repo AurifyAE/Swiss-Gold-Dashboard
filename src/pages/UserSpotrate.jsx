@@ -1,6 +1,7 @@
 import React from 'react'
 import Header from '../components/Header';
 import UserSpotrate from '../components/userSession/userSpotrate';
+
 function UserSpotratePage() {
   const title = "User Spotrate"
   const description = "Customise the price rate for this particular category"

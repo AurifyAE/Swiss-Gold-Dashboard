@@ -24,27 +24,27 @@ import {
   Button,
   Container,
   Stack,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import {
   KeyboardArrowDown,
   KeyboardArrowRight,
   DeleteOutline,
   ShoppingCartOutlined,
-  RefreshOutlined
+  RefreshOutlined,
 } from "@mui/icons-material";
 import toast from "react-hot-toast";
 
 // Status color mapping utility
 const getStatusColor = (status) => {
   const statusColorMap = {
-    "Success": "success",
-    "Approved": "success",
-    "Rejected": "error",
-    "Processing": "warning",
+    Success: "success",
+    Approved: "success",
+    Rejected: "error",
+    Processing: "warning",
     "User Approval Pending": "warning",
-    "Pending": "warning",
-    "Cancelled": "error"
+    Pending: "warning",
+    Cancelled: "error",
   };
   return statusColorMap[status] || "default";
 };
@@ -74,8 +74,9 @@ const OrderManagement = ({ userId }) => {
       const newOrders = response.data.data || [];
 
       setOrders((prevOrders) => {
-        const hasChanges = JSON.stringify(prevOrders) !== JSON.stringify(newOrders);
-        
+        const hasChanges =
+          JSON.stringify(prevOrders) !== JSON.stringify(newOrders);
+
         if (hasChanges && prevOrders.length > 0) {
           toast.success("Orders updated!", {
             id: loadingToastId,
@@ -84,7 +85,7 @@ const OrderManagement = ({ userId }) => {
         } else {
           toast.dismiss(loadingToastId);
         }
-        
+
         return newOrders;
       });
 
@@ -111,13 +112,15 @@ const OrderManagement = ({ userId }) => {
 
     try {
       await axios.delete(`/delete-order/${deleteOrderId}`);
-      
+
       // Remove the deleted order from the list
-      setOrders(prevOrders => prevOrders.filter(order => order._id !== deleteOrderId));
-      
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== deleteOrderId)
+      );
+
       // Show success toast
       toast.success("Order deleted successfully!");
-      
+
       // Close the confirmation dialog
       setDeleteOrderId(null);
     } catch (error) {
@@ -150,38 +153,34 @@ const OrderManagement = ({ userId }) => {
 
   // No Orders Rendering
   const renderNoOrders = () => (
-    <Container maxWidth="sm" sx={{ textAlign: 'center', py: 4 }}>
-      <Stack 
-        spacing={3} 
-        alignItems="center" 
-        justifyContent="center"
-      >
-        <ShoppingCartOutlined 
-          sx={{ 
-            fontSize: 50, 
-            color: 'text.secondary',
-            opacity: 0.5
-          }} 
+    <Container maxWidth="sm" sx={{ textAlign: "center", py: 4 }}>
+      <Stack spacing={3} alignItems="center" justifyContent="center">
+        <ShoppingCartOutlined
+          sx={{
+            fontSize: 50,
+            color: "text.secondary",
+            opacity: 0.5,
+          }}
         />
         <Typography variant="h4" color="text.secondary">
           No Order History
         </Typography>
         <Typography variant="body1" color="text.disabled" sx={{ mb: 2 }}>
-          You haven't placed any orders yet. Start exploring our products and make your first purchase!
+          You haven't placed any orders yet. Start exploring our products and
+          make your first purchase!
         </Typography>
-       
       </Stack>
     </Container>
   );
 
   // Loading State Rendering
   const renderLoading = () => (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '50vh' 
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "50vh",
       }}
     >
       <Stack alignItems="center" spacing={2}>
@@ -195,14 +194,14 @@ const OrderManagement = ({ userId }) => {
 
   // Error State Rendering
   const renderError = () => (
-    <Container maxWidth="sm" sx={{ textAlign: 'center', py: 4 }}>
+    <Container maxWidth="sm" sx={{ textAlign: "center", py: 4 }}>
       <Stack spacing={3} alignItems="center">
-        <RefreshOutlined 
-          sx={{ 
-            fontSize: 50, 
-            color: 'error.main',
-            opacity: 0.7
-          }} 
+        <RefreshOutlined
+          sx={{
+            fontSize: 50,
+            color: "error.main",
+            opacity: 0.7,
+          }}
         />
         <Typography variant="h5" color="error">
           Error Loading Orders
@@ -210,8 +209,8 @@ const OrderManagement = ({ userId }) => {
         <Typography variant="body1" color="text.secondary">
           {error || "Unable to fetch order history"}
         </Typography>
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           color="error"
           onClick={fetchOrders}
           startIcon={<RefreshOutlined />}
@@ -241,156 +240,165 @@ const OrderManagement = ({ userId }) => {
       ) : (
         // Existing Orders Table Rendering (Previous Implementation)
         <TableContainer component={Paper} elevation={3}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f0f0f0" }}>
-              <TableCell></TableCell>
-              <TableCell>Transaction ID</TableCell>
-              <TableCell>Delivery Date</TableCell>
-              <TableCell>Payment Method</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Total Amount </TableCell>
-              <TableCell>Total Weight </TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(rowsPerPage > 0
-              ? orders.slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                )
-              : orders
-            ).map((order) => (
-              <React.Fragment key={order._id}>
-                <TableRow hover>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      onClick={() => toggleOrderExpansion(order._id)}
-                    >
-                      {expandedOrders[order._id] ? (
-                        <KeyboardArrowDown />
-                      ) : (
-                        <KeyboardArrowRight />
-                      )}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>{order.transactionId}</TableCell>
-                  <TableCell>{formatDate(order.orderDate)}</TableCell>
-                  <TableCell>{order.paymentMethod}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={order.orderStatus} 
-                      color={getStatusColor(order.orderStatus)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>{order.totalPrice || "Nil"}</TableCell>
-                  <TableCell>{order.totalWeight || "Nil"}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <IconButton 
-                        onClick={() => openDeleteConfirmation(order._id)} 
-                        size="small" 
-                        color="error"
+          <Table>
+            <TableHead>
+              <TableRow
+                sx={{
+                  background: "linear-gradient(to right, #32B4DB, #156AEF)",
+                }}
+              >
+                <TableCell></TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Transaction ID</TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Delivery Date</TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Payment Method</TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Status</TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Total Amount </TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Total Weight </TableCell>
+                <TableCell sx={{ color: "#FFFFFF" }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(rowsPerPage > 0
+                ? orders.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : orders
+              ).map((order) => (
+                <React.Fragment key={order._id}>
+                  <TableRow hover>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        onClick={() => toggleOrderExpansion(order._id)}
                       >
-                        <DeleteOutline fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    sx={{
-                      paddingBottom: 0,
-                      paddingTop: 0,
-                    }}
-                  >
-                    <Collapse
-                      in={expandedOrders[order._id]}
-                      timeout="auto"
-                      unmountOnExit
-                    >
-                      <Box sx={{ margin: 2 }}>
-                        {order.items && order.items.length > 0 ? (
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>Product Image</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Weight</TableCell>
-                                <TableCell>Purity</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Quantity</TableCell>
-                                <TableCell>Amount</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {order.items.map((item) => (
-                                <TableRow key={item._id}>
-                                  <TableCell>
-                                    <Avatar
-                                      variant="rounded"
-                                      alt={item.product.title}
-                                      src={item.product.images[0].url}
-                                      sx={{
-                                        width: 60,
-                                        height: 60,
-                                        borderRadius: "10px",
-                                        border: "none",
-                                        boxShadow: "none",
-                                      }}
-                                    />
-                                  </TableCell>
-                                  <TableCell>{item.product?.title}</TableCell>
-                                  <TableCell>{item.product?.weight}g</TableCell>
-                                  <TableCell>{item.product?.purity}</TableCell>
-                                  <TableCell>
-                                    <Chip 
-                                      label={item.itemStatus} 
-                                      color={getStatusColor(item.itemStatus)}
-                                      size="small"
-                                    />
-                                  </TableCell>
-                                  <TableCell>{item.quantity}</TableCell>
-                                  <TableCell>{item.product.price}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
+                        {expandedOrders[order._id] ? (
+                          <KeyboardArrowDown />
                         ) : (
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            align="center"
-                          >
-                            No items in this order
-                          </Typography>
+                          <KeyboardArrowRight />
                         )}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{order.transactionId}</TableCell>
+                    <TableCell>{formatDate(order.orderDate)}</TableCell>
+                    <TableCell>{order.paymentMethod}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={order.orderStatus}
+                        color={getStatusColor(order.orderStatus)}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>{order.totalPrice || "Nil"}</TableCell>
+                    <TableCell>{order.totalWeight || "Nil"}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        <IconButton
+                          onClick={() => openDeleteConfirmation(order._id)}
+                          size="small"
+                          color="error"
+                        >
+                          <DeleteOutline fontSize="small" />
+                        </IconButton>
                       </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      sx={{
+                        paddingBottom: 0,
+                        paddingTop: 0,
+                      }}
+                    >
+                      <Collapse
+                        in={expandedOrders[order._id]}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Box sx={{ margin: 2 }}>
+                          {order.items && order.items.length > 0 ? (
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell>Product Image</TableCell>
+                                  <TableCell>Name</TableCell>
+                                  <TableCell>Weight</TableCell>
+                                  <TableCell>Purity</TableCell>
+                                  <TableCell>Status</TableCell>
+                                  <TableCell>Quantity</TableCell>
+                                  <TableCell>Amount</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {order.items.map((item) => (
+                                  <TableRow key={item._id}>
+                                    <TableCell>
+                                      <Avatar
+                                        variant="rounded"
+                                        alt={item.product.title}
+                                        src={item.product.images[0].url}
+                                        sx={{
+                                          width: 60,
+                                          height: 60,
+                                          borderRadius: "10px",
+                                          border: "none",
+                                          boxShadow: "none",
+                                        }}
+                                      />
+                                    </TableCell>
+                                    <TableCell>{item.product?.title}</TableCell>
+                                    <TableCell>
+                                      {item.product?.weight}g
+                                    </TableCell>
+                                    <TableCell>
+                                      {item.product?.purity}
+                                    </TableCell>
+                                    <TableCell>
+                                      <Chip
+                                        label={item.itemStatus}
+                                        color={getStatusColor(item.itemStatus)}
+                                        size="small"
+                                      />
+                                    </TableCell>
+                                    <TableCell>{item.quantity}</TableCell>
+                                    <TableCell>{item.product.price}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          ) : (
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              align="center"
+                            >
+                              No items in this order
+                            </Typography>
+                          )}
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-          component="div"
-          count={orders.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-        />
-      </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+            component="div"
+            count={orders.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            sx={{backgroundColor: "#F3F4F6"}}
+          />
+        </TableContainer>
       )}
 
       {/* Delete Confirmation Dialog */}
@@ -400,12 +408,11 @@ const OrderManagement = ({ userId }) => {
         aria-labelledby="delete-order-dialog-title"
         aria-describedby="delete-order-dialog-description"
       >
-        <DialogTitle id="delete-order-dialog-title">
-          Delete Order
-        </DialogTitle>
+        <DialogTitle id="delete-order-dialog-title">Delete Order</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-order-dialog-description">
-            Are you sure you want to delete this order? This action cannot be undone.
+            Are you sure you want to delete this order? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

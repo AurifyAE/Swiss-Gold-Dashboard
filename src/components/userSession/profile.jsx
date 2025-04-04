@@ -3,7 +3,12 @@ import axios from "../../axios/axios";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import OrderManagement from "./orderHistory";
+import Header from "../../components/Header";
+
 const ProfilePage = () => {
+  const title = "Customer Profile Details";
+  const description = "Get the customer's detailed information";
+
   // Extract userId from URL
   const { userId } = useParams();
 
@@ -248,7 +253,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9] p-6">
+    <div className="flex flex-col w-full min-h-screen bg-gradient-to-r from-[#E9FAFF] to-[#EEF3F9]">
       {/* Add Toaster component */}
       <Toaster
         position="top-right"
@@ -268,17 +273,8 @@ const ProfilePage = () => {
         }}
       />
 
-      <div className="overflow-hidden">
-        {/* Header Section */}
-        <div className="bg-[#F7FBFF] p-6 border-b border-gray-100">
-          <h1 className="text-2xl font-bold mb-2.5">
-            Customer Profile Details
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Get the customer's detailed information
-          </p>
-        </div>
-
+      <Header title={title} description={description} />
+      <div className="overflow-hidden px-16">
         {/* Personal Information Section */}
         <div className="p-6">
           <section className="space-y-6">
@@ -516,9 +512,8 @@ const ProfilePage = () => {
 
           <h2 className="text-xl font-bold -mt-7 mb-5 ml-5">Order History</h2>
           <div>
-          <OrderManagement userId={userId} />
+            <OrderManagement userId={userId} />
           </div>
-         
         </div>
 
         {/* Divider */}

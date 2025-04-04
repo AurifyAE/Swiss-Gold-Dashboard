@@ -72,14 +72,6 @@ const Sidebar = () => {
         />
         <SidebarItem
           icon={
-            <LineChart strokeWidth={1.5} size={22} className="text-white" />
-          }
-          text="Spot Rate"
-          to="/spot-rate"
-          active={location.pathname === "/spot-rate"}
-        />
-        <SidebarItem
-          icon={
             <ShoppingCart strokeWidth={1.5} size={22} className="text-white" />
           }
           text="Shop"
@@ -100,7 +92,7 @@ const Sidebar = () => {
         />
       </nav>
 
-      <nav className="flex flex-col space-y-2 mt-16">
+      <nav className="flex flex-col space-y-2 mt-8">
         {/* Company Pages Section */}
         <div className="text-[#1A3C70] text-sm font-medium ml-3 mb-3">
           COMPANY PAGES
@@ -119,7 +111,7 @@ const Sidebar = () => {
         />
       </nav>
 
-      <nav className="flex flex-col space-y-2 mt-16">
+      <nav className="flex flex-col space-y-2 mt-8">
         {/* Help & Logout */}
         <div className="mt-auto">
           <SidebarItem
@@ -134,13 +126,22 @@ const Sidebar = () => {
           <div onClick={handleLogout} className="no-underline">
             <div
               className={`flex relative items-center gap-3 p-3 w-64 rounded-xl cursor-pointer transition-all 
-              text-slate-700 hover:bg-slate-100`}
+              text-slate-700 hover:bg-slate-100 mt-3`}
             >
-              <LogOut
-                strokeWidth={1.5}
-                size={22}
-                className="text-white bg-gradient-to-r from-[#156AEF] to-[#32B4DB] p-4 rounded-md"
-              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="bg-gradient-to-r from-[#156AEF] to-[#32B4DB] p-2 rounded-md w-[38px] text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
               <span className="font-medium">Log Out</span>
             </div>
           </div>
@@ -165,7 +166,7 @@ const SidebarItem = ({ icon, text, to, active }) => {
             }`}
       >
         <div
-          className={`flex justify-center items-center absolute right-0 top-0 h-full w-1  rounded-r-md ${
+          className={`flex justify-center items-center absolute right-0 top-0 h-full w-1  rounded-r-lg ${
             active ? "bg-gradient-to-r from-[#156AEF] to-[#32B4DB]" : ""
           }`}
         ></div>

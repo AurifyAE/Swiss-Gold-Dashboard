@@ -132,13 +132,9 @@ const CategoryManagement = ({
     handleCloseDeleteModal();
   };
 
-  const handleViewCategory = (category) => {
-    navigate(`/users-spotrate?categoryId=${category._id}&name=${category.name}`);
-  };
-
   const columns = [
     { id: "Category Name", label: "Category Name", minWidth: 170 },
-    { id: "Assigned Rates", label: "Assigned Rates", minWidth: 100 },
+    // { id: "Assigned Rates", label: "Assigned Rates", minWidth: 100 },
     { id: "actions", label: "Actions", minWidth: 100 },
   ];
 
@@ -183,7 +179,7 @@ const CategoryManagement = ({
               .map((category) => (
                 <TableRow hover key={category._id}>
                   <TableCell>{category.name}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Button
                       variant="outlined"
                       startIcon={<VisibilityIcon />}
@@ -192,7 +188,7 @@ const CategoryManagement = ({
                     >
                       User SpotRate
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <IconButton
                       onClick={() => handleOpenModal(category)}
@@ -262,6 +258,12 @@ const UserDataTable = ({
   const handleOpenModal = (user = null) => {
     setEditingUser(user);
     setOpenModal(true);
+  };
+
+  const handleViewCategory = (user) => {
+    navigate(
+      `/users-category?categoryId=${user.categoryId}&userId=${user._id}`
+    );
   };
 
   const handleCloseModal = () => {
@@ -350,6 +352,7 @@ const UserDataTable = ({
                       size="small"
                       variant="outlined"
                       className="text-blue-500 border-blue-500"
+                      onClick={() => handleViewCategory(user)}
                     >
                       User Spotrate
                     </Button>

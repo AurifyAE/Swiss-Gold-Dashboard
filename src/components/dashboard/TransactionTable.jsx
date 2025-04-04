@@ -438,7 +438,6 @@ const getStatusBadge = (status) => {
   );
 };
 
-// Transaction Row Component
 const TransactionRow = ({
   transaction,
   expanded,
@@ -550,8 +549,8 @@ const TransactionRow = ({
 
   // Handle product approval
   const handleApproval = async (product) => {
-    console.log(product.fixedPrice)
-    console.log(orderId)
+    console.log(product.fixedPrice);
+    console.log(orderId);
     if (!orderId || !product.itemId) return;
 
     if (product.quantity <= 1) {
@@ -563,7 +562,7 @@ const TransactionRow = ({
           fixedPrice: product.amount,
           quantity: product.quantity,
         });
-        
+
         toast.success("Order approved", {
           id: loadingToastId,
           duration: 3000,
@@ -584,7 +583,7 @@ const TransactionRow = ({
   // Optimized quantity submission handler
   const handleQuantitySubmit = async () => {
     if (!selectedOrder || !selectedProduct?.productId) return;
-    
+
     const loadingToastId = toast.loading("Updating quantity...");
     try {
       await axiosInstance.put(`/update-order-quantity/${selectedOrder}`, {
@@ -593,7 +592,7 @@ const TransactionRow = ({
         fixedPrice: selectedProduct.amount,
         quantity: quantity,
       });
-      
+
       setModals((prev) => ({ ...prev, quantity: false }));
       toast.success("Quantity updated", {
         id: loadingToastId,
@@ -649,53 +648,68 @@ const TransactionRow = ({
         <div>{date}</div>
         <div>{paymentMethod}</div>
 
-        {/* Improved dropdown */}
+        {/* Status display - conditional rendering based on dashboard prop */}
         <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className={`flex items-center justify-between px-3 py-1 rounded-md text-sm font-semibold w-max ${statusStyles[selectedStatus]}`}
-            aria-haspopup="true"
-            aria-expanded={showDropdown}
-          >
-            <span>{selectedStatus}</span>
-            <svg
-              className={`ml-1 w-4 h-4 transition-transform ${
-                showDropdown ? "transform rotate-180" : ""
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+          {dashboard ? (
+            // For dashboard, just show the status without dropdown
+            <div
+              className={`flex items-center justify-between px-3 py-1 rounded-md text-sm font-semibold w-max ${statusStyles[selectedStatus]}`}
             >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+              <span>{selectedStatus}</span>
+            </div>
+          ) : (
+            // For non-dashboard view, show dropdown functionality
+            <>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className={`flex items-center justify-between px-3 py-1 rounded-md text-sm font-semibold w-max ${statusStyles[selectedStatus]}`}
+                aria-haspopup="true"
+                aria-expanded={showDropdown}
+              >
+                <span>{selectedStatus}</span>
+                <svg
+                  className={`ml-1 w-4 h-4 transition-transform ${
+                    showDropdown ? "transform rotate-180" : ""
+                  }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
 
-          {showDropdown && (
-            <ul
-              className="absolute left-0 mt-1 w-42 bg-white shadow-lg border rounded-md text-sm z-10"
-              role="menu"
-            >
-              {["Rejected", "Success", "UserApprovalPending", "Processing"].map(
-                (statusOption) => (
-                  <li
-                    key={statusOption}
-                    onClick={() => handleStatusChange(statusOption)}
-                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                      statusOption === selectedStatus
-                        ? "bg-gray-50 font-medium"
-                        : ""
-                    }`}
-                    role="menuitem"
-                  >
-                    {statusOption}
-                  </li>
-                )
+              {showDropdown && (
+                <ul
+                  className="absolute left-0 mt-1 w-42 bg-white shadow-lg border rounded-md text-sm z-10"
+                  role="menu"
+                >
+                  {[
+                    "Rejected",
+                    "Success",
+                    "UserApprovalPending",
+                    "Processing",
+                  ].map((statusOption) => (
+                    <li
+                      key={statusOption}
+                      onClick={() => handleStatusChange(statusOption)}
+                      className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
+                        statusOption === selectedStatus
+                          ? "bg-gray-50 font-medium"
+                          : ""
+                      }`}
+                      role="menuitem"
+                    >
+                      {statusOption}
+                    </li>
+                  ))}
+                </ul>
               )}
-            </ul>
+            </>
           )}
         </div>
 
@@ -731,7 +745,9 @@ const TransactionRow = ({
               <div className="text-center w-[180px]">Purity</div>
               <div className="text-center w-[180px]">Quantity</div>
               <div className="text-center w-[180px]">Amount</div>
-              <div className="text-center w-[200px]">Actions</div>
+              {!dashboard && (
+                <div className="text-center w-[200px]">Actions</div>
+              )}
             </div>
 
             {productsToDisplay.length > 0 ? (
@@ -767,20 +783,27 @@ const TransactionRow = ({
                     <div className="text-sm text-center text-black w-[180px]">
                       {product.amount}
                     </div>
-                    <div className="text-sm text-center text-black w-[200px]">
-                      {product.status === "Approval Pending" ? (
-                        <button 
-                          onClick={() => handleApproval(product)}
-                          className="bg-blue-100 text-[#0790E6] px-4 py-2 rounded-md shadow-lg hover:bg-blue-200 transition-colors"
-                        >
-                          Approval Pending
-                        </button>
-                      ) : (
-                        <button className={`px-4 py-2 rounded-md shadow-lg ${statusStyles[product.status] || "bg-orange-100 text-[#FF8C00]"}`}>
-                          {product.status}
-                        </button>
-                      )}
-                    </div>
+                    {!dashboard && (
+                      <div className="text-sm text-center text-black w-[200px]">
+                        {product.status === "Approval Pending" ? (
+                          <button
+                            onClick={() => handleApproval(product)}
+                            className="bg-blue-100 text-[#0790E6] px-4 py-2 rounded-md shadow-lg hover:bg-blue-200 transition-colors"
+                          >
+                            Approval Pending
+                          </button>
+                        ) : (
+                          <button
+                            className={`px-4 py-2 rounded-md shadow-lg ${
+                              statusStyles[product.status] ||
+                              "bg-orange-100 text-[#FF8C00]"
+                            }`}
+                          >
+                            {product.status}
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import axios from "../../axios/axios";
 // IconWrapper Component
 const IconWrapper = ({ bgColor, opacity = "0.05", children }) => {
     return (
@@ -76,33 +76,64 @@ const FilterDropdown = ({ activeFilter, setActiveFilter }) => {
 // Main StatisticsPanel Component
 const StatisticsPanel = () => {
     const [activeFilter, setActiveFilter] = useState("This Week");
-    
-    // Sample data that would change based on filter
-    const getFilteredData = () => {
+    const [statsData, setStatsData] = useState({
+        customers: "0",
+        ordersCompleted: "0",
+        totalRevenue: "AED 0"
+    });
+    const [loading, setLoading] = useState(true);
+
+    // Map UI filter to API parameter
+    const getTimePeriod = () => {
         switch(activeFilter) {
-            case "This Month":
-                return {
-                    customers: "24",
-                    ordersCompleted: "5.2K",
-                    totalRevenue: "AED 580K"
-                };
-            case "This Year":
-                return {
-                    customers: "312",
-                    ordersCompleted: "65.8K",
-                    totalRevenue: "AED 7.2M"
-                };
+            case "This Month": return "month";
+            case "This Year": return "year";
             case "This Week":
-            default:
-                return {
-                    customers: "06",
-                    ordersCompleted: "1.25K",
-                    totalRevenue: "AED 145K"
-                };
+            default: return "week";
         }
     };
-    
-    const filteredData = getFilteredData();
+
+    useEffect(() => {
+        const fetchStatistics = async () => {
+            setLoading(true);
+            try {
+                const adminId = localStorage.getItem('adminId'); // Get adminId from localStorage or use empty string
+                const timePeriod = getTimePeriod();
+                
+                const response = await axios.get(`/overview/${adminId}?timePeriod=${timePeriod}`);
+                
+                if (response.data.success) {
+                    const { userCount, completedOrders, totalRevenue } = response.data.data;
+                    
+                    // Format the data for display
+                    setStatsData({
+                        customers: userCount.toString().padStart(2, '0'),
+                        ordersCompleted: formatNumber(completedOrders),
+                        totalRevenue: `AED ${formatNumber(totalRevenue)}`
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching statistics:", error);
+                // Keep the previous data or set to zeros on error
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchStatistics();
+    }, [activeFilter]); // Re-fetch when filter changes
+
+    // Helper function to format numbers (e.g., 1250 -> 1.25K, 7200000 -> 7.2M)
+    const formatNumber = (num) => {
+        if (num >= 1000000) {
+            return `${(num / 1000000).toFixed(1)}M`;
+        } else if (num >= 1000) {
+            return `${(num / 1000).toFixed(2)}K`;
+        }
+        return num.toString();
+    };
+
+
 
     return (
         <section className="flex justify-center w-full px-12">
@@ -126,7 +157,7 @@ const StatisticsPanel = () => {
                             </IconWrapper>
                         }
                         label="Customers"
-                        value={filteredData.customers}
+                        value={loading ? "..." : statsData.customers}
                         valueColor="text-[#FF8C00]"
                     />
 
@@ -148,7 +179,7 @@ const StatisticsPanel = () => {
                             </IconWrapper>
                         }
                         label="Orders Completed"
-                        value={filteredData.ordersCompleted}
+                        value={loading ? "..." : statsData.ordersCompleted}
                         valueColor="text-[#11AA0E]"
                     />
 
@@ -170,7 +201,7 @@ const StatisticsPanel = () => {
                             </IconWrapper>
                         }
                         label="Total Revenue Made"
-                        value={filteredData.totalRevenue}
+                        value={loading ? "..." : statsData.totalRevenue}
                         valueColor="text-[#156AEF]"
                     />
                 </div>

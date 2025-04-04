@@ -182,6 +182,7 @@ const LoginPage = ({ onLoginSuccess })=> {
       style={{
         display: "flex",
         height: "100vh",
+        width:"100%",
         backgroundColor: "white",
         overflow: "hidden",
       }}
@@ -192,8 +193,7 @@ const LoginPage = ({ onLoginSuccess })=> {
           width: "50%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          paddingLeft: "8rem",
+        
         }}
       >
         <div style={{ width: "100%", maxWidth: "20rem" }}>

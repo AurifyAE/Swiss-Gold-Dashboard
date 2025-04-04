@@ -1,42 +1,74 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useAppContext } from "../context/AppContext";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = ({ title, description }) => {
-  const [currentTime, setCurrentTime] = useState("");
-  const [userName, setUserName] = useState("Ajmal");
-  const [userRole, setUserRole] = useState("Admin");
+  const { currentTime, userData } = useAppContext();
   const [notificationCount, setNotificationCount] = useState(3);
-
-  // State to manage expanded sections
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
 
   const notificationRef = useRef(null);
   const userProfileRef = useRef(null);
 
-  useEffect(() => {
-    // Function to update the date and time every second
-    const interval = setInterval(() => {
-      const now = new Date();
-      const formattedDate = now.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   // Function to update the date and time every second
+  //   const interval = setInterval(() => {
+  //     const now = new Date();
+  //     const formattedDate = now.toLocaleString("en-GB", {
+  //       day: "2-digit",
+  //       month: "2-digit",
+  //       year: "numeric",
+  //       hour: "2-digit",
+  //       minute: "2-digit",
+  //       second: "2-digit",
+  //     });
+
+  //     // Adding "-" after the date
+  //     const [date, time] = formattedDate.split(", ");
+  //     const formattedDateWithDash = `${date} - ${time}`;
+
+  //     setCurrentTime(formattedDateWithDash);
+  //   }, 1000);
+
+  //   // Clear the interval when the component is unmounted
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // Logout handler function
+  const handleLogout = (e) => {
+    e.preventDefault(); // Prevent default navigation
+
+    // Show logout in progress toast
+    toast.info("Logging out...", {
+      position: "top-right",
+      autoClose: 1500,
+    });
+
+    // Clear all authentication data
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("adminId");
+    localStorage.removeItem("rememberMe");
+
+    // Add small delay for visual feedback
+    setTimeout(() => {
+      // Show success message
+      toast.success("Logged out successfully", {
+        position: "top-right",
+        autoClose: 2000,
       });
 
-      // Adding "-" after the date
-      const [date, time] = formattedDate.split(", ");
-      const formattedDateWithDash = `${date} - ${time}`;
-
-      setCurrentTime(formattedDateWithDash);
-    }, 1000);
-
-    // Clear the interval when the component is unmounted
-    return () => clearInterval(interval);
-  }, []);
+      // Navigate to login page
+      navigate("/");
+    }, 800);
+  };
 
   // Handle clicks outside the dropdowns to close them
   useEffect(() => {
@@ -184,7 +216,7 @@ const Header = ({ title, description }) => {
           {/* User Profile */}
           <div className="gradient-border">
             <div className="gradient-border-inner">
-              <img src="" alt="" />
+              <img src={userData.logo} alt="" />
             </div>
           </div>
           <div className="relative">
@@ -196,9 +228,9 @@ const Header = ({ title, description }) => {
             >
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-black">
-                  {userName}
+                  {userData.companyName}
                 </span>
-                <span className="text-xs text-black">{userRole}</span>
+                <span className="text-xs text-black">{userData.userRole}</span>
               </div>
               <div
                 className="flex relative justify-center items-center w-5 h-5"
@@ -248,26 +280,15 @@ const Header = ({ title, description }) => {
                   <div className="flex items-center space-x-3 pb-3 border-b border-gray-100">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-teal-400 flex items-center justify-center text-white">
                       {/* User initial or avatar placeholder */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
+                      <img src={userData.logo} alt="logo" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-800">
-                        {userName}
+                        {userData.companyName}
                       </p>
-                      <p className="text-xs text-gray-500">{userRole}</p>
+                      <p className="text-xs text-gray-500">
+                        {userData.userRole}
+                      </p>
                     </div>
                   </div>
 
@@ -287,20 +308,14 @@ const Header = ({ title, description }) => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={1.5}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                       />
                     </svg>
-                    <span className="text-sm">Settings</span>
+                    <span className="text-sm">Profile</span>
                   </a>
 
                   <a
-                    href="/help"
+                    href="/help-center"
                     className="flex items-center space-x-3 text-gray-700 hover:text-blue-500 transition-colors duration-200 group"
                   >
                     <svg
@@ -336,7 +351,12 @@ const Header = ({ title, description }) => {
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                       />
                     </svg>
-                    <span className="text-sm font-medium">Logout</span>
+                    <button
+                      className="text-sm font-medium"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
                   </button>
                 </div>
               </div>

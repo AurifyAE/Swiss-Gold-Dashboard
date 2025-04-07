@@ -26,6 +26,7 @@ import {
 } from "@react-pdf/renderer";
 import axiosInstance from "../../axios/axios";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 // Improved Chevron Icon Component
 export const ChevronIcon = ({ expanded }) => {
@@ -94,7 +95,7 @@ const TransactionHeader = ({ sortConfig, onSort, className = "" }) => {
     { key: "date", label: "Delivery Date" },
     { key: "paymentMethod", label: "Payment Method" },
     { key: "status", label: "Status" },
-    { key: "pricingOption", label: "Pricing Option" },
+    { key: "TotalWeight", label: "TotalWeight" },
     { key: "amount", label: "Total Amount" },
   ];
 
@@ -450,11 +451,12 @@ const TransactionRow = ({
     date,
     paymentMethod,
     status,
-    pricingOption,
+    totalWeight,
     amount,
     customer,
     products: transactionProducts,
   } = transaction;
+  const navigate = useNavigate();
 
   const [selectedStatus, setSelectedStatus] = useState(status);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -632,7 +634,10 @@ const TransactionRow = ({
     Processing: "bg-orange-100 text-[#FF8C00]",
     Approved: "bg-green-100 text-[#11AA0E]",
   };
-
+  const handleViewProfile = (userId) => {
+    console.log("first")
+    navigate(`/profile/${userId}`);
+  };
   return (
     <div className="last:border-b-0 bg-white">
       <div className="grid grid-cols-7 items-center px-12 py-4 hover:bg-[#F1FCFF] transition-colors">
@@ -645,7 +650,7 @@ const TransactionRow = ({
           </button>
           {id}
         </div>
-        <div>{date}</div>
+        <div className="ml-5">{date}</div>
         <div>{paymentMethod}</div>
 
         {/* Status display - conditional rendering based on dashboard prop */}
@@ -689,6 +694,7 @@ const TransactionRow = ({
                   role="menu"
                 >
                   {[
+                    "Approved",
                     "Rejected",
                     "Success",
                     "UserApprovalPending",
@@ -713,12 +719,12 @@ const TransactionRow = ({
           )}
         </div>
 
-        <div>{pricingOption}</div>
+        <div className="font-semibold">{totalWeight} g</div>
         <div className="font-semibold">
-          ${typeof amount === "number" ? amount.toLocaleString() : amount}
+          AED {typeof amount === "number" ? amount.toLocaleString() : amount}
         </div>
         <div className="flex items-center justify-between">
-          <button className="px-6 py-2 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+          <button onClick={()=>handleViewProfile(customer.id)} className="px-6 py-2 bg-gradient-to-r from-[#32B4DB] to-[#156AEF] text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
             View
           </button>
           {!dashboard && (
@@ -974,7 +980,6 @@ const TransactionTable = ({
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-
   const adminId =
     typeof window !== "undefined" ? localStorage.getItem("adminId") : null;
 
@@ -1034,9 +1039,10 @@ const TransactionTable = ({
             : "N/A",
           paymentMethod: order.paymentMethod || "N/A",
           status: order.orderStatus || "N/A",
-          pricingOption: order.pricingScheme || "N/A",
           amount: order.totalPrice || 0,
+          totalWeight:order.totalWeight || 0,
           customer: {
+            id:order.customer?.id,
             name: order.customer?.name || "N/A",
             email: order.customer?.email || "N/A",
           },

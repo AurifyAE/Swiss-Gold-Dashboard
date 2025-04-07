@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Search,
   Plus,
@@ -16,6 +11,17 @@ import {
 } from "lucide-react";
 import axios from "../../axios/axios";
 import toast, { Toaster } from "react-hot-toast";
+const purityOptions = [
+  { value: 9999, label: "9999" },
+  { value: 999.9, label: "999.9" },
+  { value: 999, label: "999" },
+  { value: 995, label: "995" },
+  { value: 916, label: "916" },
+  { value: 920, label: "920" },
+  { value: 875, label: "875" },
+  { value: 750, label: "750" },
+];
+const adminId = localStorage.getItem("adminId");
 
 // Product Modal Component
 function ProductModal({
@@ -76,7 +82,10 @@ function ProductModal({
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-4">
                 {existingImages.map((img, index) => (
-                  <div key={`existing-${index}`} className="relative group aspect-square">
+                  <div
+                    key={`existing-${index}`}
+                    className="relative group aspect-square"
+                  >
                     <img
                       src={img.url}
                       alt={`Existing ${index + 1}`}
@@ -95,7 +104,10 @@ function ProductModal({
                 ))}
 
                 {newImages.map((file, index) => (
-                  <div key={`new-${index}`} className="relative group aspect-square">
+                  <div
+                    key={`new-${index}`}
+                    className="relative group aspect-square"
+                  >
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`New ${index + 1}`}
@@ -124,7 +136,9 @@ function ProductModal({
                     />
                     <Plus className="w-8 h-8 text-gray-400 mb-2" />
                     <span className="text-sm text-gray-500">Add Images</span>
-                    <span className="text-xs text-gray-400 mt-1">Max {MAX_IMAGES}</span>
+                    <span className="text-xs text-gray-400 mt-1">
+                      Max {MAX_IMAGES}
+                    </span>
                   </label>
                 )}
               </div>
@@ -134,7 +148,9 @@ function ProductModal({
                   <span>⚠️</span>
                   <div>
                     <p className="font-medium">No images uploaded</p>
-                    <p className="text-sm">Please upload at least one product image</p>
+                    <p className="text-sm">
+                      Please upload at least one product image
+                    </p>
                   </div>
                 </div>
               )}
@@ -182,9 +198,7 @@ function ProductModal({
                   type="number"
                   placeholder="Enter price"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  min="0"
-                  step="0.01"
+                 
                 />
               </div>
 
@@ -199,9 +213,7 @@ function ProductModal({
                   type="number"
                   placeholder="Enter weight"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  min="0"
-                  step="0.1"
+                 
                 />
               </div>
 
@@ -216,10 +228,11 @@ function ProductModal({
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select purity</option>
-                  <option value="24">24K</option>
-                  <option value="22">22K</option>
-                  <option value="18">18K</option>
-                  <option value="14">14K</option>
+                  {purityOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -354,9 +367,9 @@ export default function ProductManagement() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const adminId = localStorage.getItem("adminId") || "67c1a8978399ea3181f5cad9";
+      const adminId = localStorage.getItem("adminId");
       const response = await axios.get(`/get-all-product/${adminId}`);
-      // console.log("Fetch products response:", response.data);
+      console.log("Fetch products response:", response.data);
       if (response.data.success) {
         setProducts(response.data.data);
       } else {
@@ -401,7 +414,10 @@ export default function ProductManagement() {
       return { isValid: false, errorMessage: "Product title is required" };
     }
     if (existingImages.length === 0 && newImages.length === 0) {
-      return { isValid: false, errorMessage: "At least one product image is required" };
+      return {
+        isValid: false,
+        errorMessage: "At least one product image is required",
+      };
     }
     const price = formData.price;
     if (!price || isNaN(price) || Number(price) <= 0) {
@@ -418,21 +434,24 @@ export default function ProductManagement() {
   }, [formData, existingImages, newImages]);
 
   // Image handlers
-  const handleImageUpload = useCallback((e) => {
-    const files = Array.from(e.target.files);
-    const totalImagesCount = existingImages.length + newImages.length;
-    const remainingSlots = MAX_IMAGES - totalImagesCount;
+  const handleImageUpload = useCallback(
+    (e) => {
+      const files = Array.from(e.target.files);
+      const totalImagesCount = existingImages.length + newImages.length;
+      const remainingSlots = MAX_IMAGES - totalImagesCount;
 
-    if (files.length > remainingSlots) {
-      showErrorToast(
-        `You can only upload ${MAX_IMAGES} images in total. ${remainingSlots} slots remaining.`
-      );
-      const selectedFiles = files.slice(0, remainingSlots);
-      setNewImages((prev) => [...prev, ...selectedFiles]);
-    } else {
-      setNewImages((prev) => [...prev, ...files]);
-    }
-  }, [existingImages, newImages]);
+      if (files.length > remainingSlots) {
+        showErrorToast(
+          `You can only upload ${MAX_IMAGES} images in total. ${remainingSlots} slots remaining.`
+        );
+        const selectedFiles = files.slice(0, remainingSlots);
+        setNewImages((prev) => [...prev, ...selectedFiles]);
+      } else {
+        setNewImages((prev) => [...prev, ...files]);
+      }
+    },
+    [existingImages, newImages]
+  );
 
   const removeNewImage = useCallback((index) => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
@@ -467,7 +486,7 @@ export default function ProductManagement() {
     try {
       const formData = prepareFormData();
       const response = await axios.post(
-        "/add-products?adminId=67c1a8978399ea3181f5cad9",
+        `/add-products?adminId=${adminId}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -532,89 +551,106 @@ export default function ProductManagement() {
       console.error("Error updating product:", error.response?.data || error);
       showErrorToast("An error occurred while updating the product");
     }
-  }, [currentProduct, existingImages, prepareFormData, resetForm, fetchProducts]);
+  }, [
+    currentProduct,
+    existingImages,
+    prepareFormData,
+    resetForm,
+    fetchProducts,
+  ]);
 
   // Delete product (Updated)
-  const handleDeleteProduct = useCallback((productId) => {
-    console.log("Attempting to delete product with ID:", productId);
+  const handleDeleteProduct = useCallback(
+    (productId) => {
+      console.log("Attempting to delete product with ID:", productId);
 
-    const confirmToast = toast(
-      (t) => (
-        <div className="flex flex-col space-y-2">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="text-yellow-500" />
-            <span className="font-bold">Confirm Deletion</span>
+      const confirmToast = toast(
+        (t) => (
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="text-yellow-500" />
+              <span className="font-bold">Confirm Deletion</span>
+            </div>
+            <p className="text-sm">
+              Are you sure you want to delete this product?
+            </p>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  performDeletion(productId);
+                }}
+                className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-          <p className="text-sm">Are you sure you want to delete this product?</p>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => {
-                toast.dismiss(t.id);
-                performDeletion(productId);
-              }}
-              className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        style: {
-          border: "2px solid #FBBF24",
-          padding: "16px",
-          backgroundColor: "#FEF3C7",
-          borderRadius: "12px",
-        },
-        duration: Infinity,
-      }
-    );
-
-    const performDeletion = async (id) => {
-      console.log(id)
-      const loadingToast = toast.loading("Deleting product...", {
-        style: {
-          border: "2px solid #3B82F6",
-          padding: "16px",
-          color: "#3B82F6",
-          backgroundColor: "#EFF6FF",
-          borderRadius: "12px",
-        },
-      });
-
-      try {
-        const response = await axios.delete(`/delete-products/${id}`);
-        console.log("Delete response:", response.data); // Log the response
-
-        toast.dismiss(loadingToast);
-
-        if (response.data.success) {
-          console.log(response.data.success)
-          showSuccessToast("Product deleted successfully!");
-          setProducts((prev) => {
-            const updatedProducts = prev.filter((product) => product._id !== id);
-            console.log("Updated products after delete:", updatedProducts);
-            return updatedProducts;
-          });
-          fetchProducts(); // Fetch latest data from server
-        } else {
-          showErrorToast(response.data.message || "Failed to delete product");
+        ),
+        {
+          style: {
+            border: "2px solid #FBBF24",
+            padding: "16px",
+            backgroundColor: "#FEF3C7",
+            borderRadius: "12px",
+          },
+          duration: Infinity,
         }
-      } catch (error) {
-        toast.dismiss(loadingToast);
-        console.error("Error deleting product:", error.response?.data || error);
-        showErrorToast(
-          error.response?.data?.message || "An error occurred while deleting the product"
-        );
-      }
-    };
-  }, [fetchProducts]);
+      );
+
+      const performDeletion = async (id) => {
+        console.log(id);
+        const loadingToast = toast.loading("Deleting product...", {
+          style: {
+            border: "2px solid #3B82F6",
+            padding: "16px",
+            color: "#3B82F6",
+            backgroundColor: "#EFF6FF",
+            borderRadius: "12px",
+          },
+        });
+
+        try {
+          const response = await axios.delete(`/delete-products/${id}`);
+          console.log("Delete response:", response.data); // Log the response
+
+          toast.dismiss(loadingToast);
+
+          if (response.data.success) {
+            console.log(response.data.success);
+            showSuccessToast("Product deleted successfully!");
+            setProducts((prev) => {
+              const updatedProducts = prev.filter(
+                (product) => product._id !== id
+              );
+              console.log("Updated products after delete:", updatedProducts);
+              return updatedProducts;
+            });
+            fetchProducts(); // Fetch latest data from server
+          } else {
+            showErrorToast(response.data.message || "Failed to delete product");
+          }
+        } catch (error) {
+          toast.dismiss(loadingToast);
+          console.error(
+            "Error deleting product:",
+            error.response?.data || error
+          );
+          showErrorToast(
+            error.response?.data?.message ||
+              "An error occurred while deleting the product"
+          );
+        }
+      };
+    },
+    [fetchProducts]
+  );
 
   // Populate form for editing
   const populateFormForEditing = useCallback((product) => {
@@ -715,7 +751,9 @@ export default function ProductManagement() {
                     <div className="flex justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                     </div>
-                    <div className="mt-2 text-gray-500">Loading products...</div>
+                    <div className="mt-2 text-gray-500">
+                      Loading products...
+                    </div>
                   </td>
                 </tr>
               ) : currentItems.length > 0 ? (
@@ -740,8 +778,12 @@ export default function ProductManagement() {
                       </div>
                     </td>
                     <td className="py-3 px-4 font-medium">{product.title}</td>
-                    <td className="py-3 px-4 text-gray-600">{product.description}</td>
-                    <td className="py-3 px-4">${Number(product.price).toFixed(2)}</td>
+                    <td className="py-3 px-4 text-gray-600">
+                      {product.description}
+                    </td>
+                    <td className="py-3 px-4">
+                      AED {Number(product.price).toFixed(2)}
+                    </td>
                     <td className="py-3 px-4">{product.weight}</td>
                     <td className="py-3 px-4">{product.purity}</td>
                     <td className="py-3 px-4">{product.sku}</td>
@@ -811,7 +853,8 @@ export default function ProductManagement() {
 
           <div className="text-sm text-gray-600">
             {indexOfFirstItem + 1}-
-            {Math.min(indexOfLastItem, filteredProducts.length)} of {filteredProducts.length}
+            {Math.min(indexOfLastItem, filteredProducts.length)} of{" "}
+            {filteredProducts.length}
           </div>
 
           {totalPages > 1 && (
@@ -831,7 +874,9 @@ export default function ProductManagement() {
                 <ChevronLeft size={18} />
               </button>
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >

@@ -289,8 +289,8 @@ const OrderManagement = ({ userId }) => {
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>{order.totalPrice || "Nil"}</TableCell>
-                    <TableCell>{order.totalWeight || "Nil"}</TableCell>
+                    <TableCell>AED {order.totalPrice || "Nil"}</TableCell>
+                    <TableCell>{order.totalWeight || "Nil"} g</TableCell>
                     <TableCell>
                       <Box sx={{ display: "flex", gap: 1 }}>
                         <IconButton
@@ -362,7 +362,7 @@ const OrderManagement = ({ userId }) => {
                                       />
                                     </TableCell>
                                     <TableCell>{item.quantity}</TableCell>
-                                    <TableCell>{item.product.price}</TableCell>
+                                    <TableCell>AED {item.product.price}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>

@@ -138,8 +138,7 @@ export default function ProductManagement() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const adminId =
-        localStorage.getItem("adminId") || "67c1a8978399ea3181f5cad9";
+      const adminId = localStorage.getItem("adminId");
       const response = await axiosInstance.get(`/get-all-product/${adminId}`);
 
       if (response.data.success) {
@@ -164,7 +163,7 @@ export default function ProductManagement() {
     setSelectedProduct(product);
     setProductMarkingChargeType(product.markingChargeType || "markup");
     setProductMarkingChargeValue(product.markingChargeValue || "");
-    setProductPremiumDiscountType(product.premiumDiscountType || "premium");
+    setProductPremiumDiscountType(product.premiumDiscountType );
     setProductPremiumDiscountValue(product.premiumDiscountValue || "");
     setModalOpen(true);
   };
@@ -607,7 +606,7 @@ export default function ProductManagement() {
                       color="primary"
                       fontWeight="bold"
                     >
-                      ${product.price.toFixed(2)}
+                      AED {product.price.toFixed(2)}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
@@ -719,7 +718,7 @@ export default function ProductManagement() {
                     >
                       Price:{" "}
                       <span style={{ fontWeight: "bold", color: "#1976d2" }}>
-                        ${selectedProduct.price.toFixed(2)}
+                        AED {selectedProduct.price.toFixed(2)}
                       </span>
                     </Typography>
                     <Typography
@@ -805,8 +804,8 @@ export default function ProductManagement() {
                         }
                         label="Premium/Discount Type"
                       >
-                        <MenuItem value="premium">Premium</MenuItem>
-                        <MenuItem value="discount">Discount</MenuItem>
+                        <MenuItem value="Premium">Premium</MenuItem>
+                        <MenuItem value="Discount">Discount</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

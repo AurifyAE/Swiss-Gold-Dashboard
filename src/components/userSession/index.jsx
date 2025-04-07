@@ -405,7 +405,7 @@ const UserDataTable = ({
 };
 
 const UserList = () => {
-  const userName = localStorage.getItem("userName") || "test5";
+  const userName = localStorage.getItem("userName") ;
   const [userData, setUserData] = useState([]);
   const [adminId, setAdminId] = useState(null);
   const [showNotification, setShowNotification] = useState(false);

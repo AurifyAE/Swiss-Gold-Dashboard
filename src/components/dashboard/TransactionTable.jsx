@@ -778,7 +778,7 @@ const TransactionRow = ({
                       {product.name}
                     </div>
                     <div className="text-sm text-center text-black w-[180px]">
-                      {product.weight}
+                      {product.weight} g
                     </div>
                     <div className="text-sm text-center text-black w-[180px]">
                       {product.purity}
@@ -787,7 +787,7 @@ const TransactionRow = ({
                       {product.quantity}
                     </div>
                     <div className="text-sm text-center text-black w-[180px]">
-                      {product.amount}
+                     AED {product.amount}
                     </div>
                     {!dashboard && (
                       <div className="text-sm text-center text-black w-[200px]">

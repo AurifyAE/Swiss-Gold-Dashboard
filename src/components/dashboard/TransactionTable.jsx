@@ -551,8 +551,6 @@ const TransactionRow = ({
 
   // Handle product approval
   const handleApproval = async (product) => {
-    console.log(product.fixedPrice);
-    console.log(orderId);
     if (!orderId || !product.itemId) return;
 
     if (product.quantity <= 1) {
@@ -589,7 +587,7 @@ const TransactionRow = ({
     const loadingToastId = toast.loading("Updating quantity...");
     try {
       await axiosInstance.put(`/update-order-quantity/${selectedOrder}`, {
-        itemStatus: "UserApprovalPending",
+        itemStatus: "User Approval Pending",
         itemId: selectedProduct.itemId,
         fixedPrice: selectedProduct.amount,
         quantity: quantity,

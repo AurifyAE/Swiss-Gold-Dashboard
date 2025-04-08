@@ -204,12 +204,8 @@ const ProfilePage = () => {
         throw new Error(response.data.message || "Gold receive failed");
       }
 
-      // Safely update gold balance
-      const newBalance = Math.max(
-        0,
-        Number(response.data.data.newBalance) || 0
-      );
-      setGoldBalance(newBalance);
+     
+      setGoldBalance(response.data.data.newBalance);
 
       // Show success toast
       toast.success(
